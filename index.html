@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="Luiz Roberto Meier & Gemini" />
+    <meta name="author" content="Luiz Roberto Meier & AI models" />
     <meta name="date" content="2025-07-09" />
     <title>Eye Test Tool</title>
     <!-- Load Tailwind CSS JIT CDN -->
@@ -59,7 +59,9 @@
       }
     </style>
   </head>
-  <body class="overflow-hidden relative h-screen w-screen">
+  <body
+    class="overflow-hidden relative h-screen w-screen bg-black text-white font-thin-custom"
+  >
     <!-- Fixed Position Text Elements -->
     <div
       id="top-text"
@@ -83,10 +85,10 @@
 
     <!-- Control Buttons -->
     <div
-      class="control-panel fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row flex-wrap justify-center items-center gap-2 z-50 p-2 rounded-xl max-w-[95vw] max-h-[90vh] overflow-y-auto"
+      class="control-panel fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col lg:flex-row justify-center items-center gap-2 z-50 p-2 rounded-xl max-w-[95vw] max-h-[90vh] overflow-y-auto bg-black/50"
     >
       <!-- Language Flags -->
-      <div id="lang-container" class="flex gap-2 p-1 rounded-lg">
+      <div id="lang-container" class="flex gap-2 p-1 rounded-lg bg-gray-800">
         <button
           data-lang="en"
           class="flag-btn rounded-full w-10 h-10"
@@ -125,43 +127,43 @@
       </div>
       <button
         id="randomize-text-btn"
-        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44 bg-gray-800 hover:bg-gray-700 text-white"
       ></button>
       <button
         id="randomize-phrases-btn"
-        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44 bg-gray-800 hover:bg-gray-700 text-white"
       ></button>
       <button
         id="randomize-positions-btn"
-        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44 bg-gray-800 hover:bg-gray-700 text-white"
       ></button>
       <div class="flex flex-col gap-2">
         <button
           id="increase-font-btn"
-          class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+          class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44 bg-gray-800 hover:bg-gray-700 text-white"
         ></button>
         <button
           id="decrease-font-btn"
-          class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+          class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44 bg-gray-800 hover:bg-gray-700 text-white"
         ></button>
       </div>
       <button
         id="fullscreen-btn"
-        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44 bg-gray-800 hover:bg-gray-700 text-white"
       ></button>
       <button
         id="theme-toggle-btn"
-        class="control-btn p-2 rounded-lg shadow-lg transition-colors duration-300 text-sm h-full flex items-center justify-center w-12 h-12"
+        class="control-btn p-2 rounded-lg shadow-lg transition-colors duration-300 text-sm h-full flex items-center justify-center w-12 h-12 bg-gray-800 hover:bg-gray-700 text-white"
       ></button>
     </div>
 
     <!-- Author Credits -->
     <div
       id="author-credits"
-      class="fixed bottom-2 right-4"
+      class="fixed bottom-2 right-4 text-gray-500"
       style="font-size: 8px; z-index: 5"
     >
-      Authors: Luiz Roberto Meier &amp; Gemini
+      Authors: Luiz Roberto Meier & AI models
     </div>
 
     <script>
