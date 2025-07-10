@@ -46,6 +46,17 @@
         font-size: 1.75rem;
         line-height: 1;
       }
+      /* Style for the scrollbar in the control panel */
+      .control-panel::-webkit-scrollbar {
+        width: 8px;
+      }
+      .control-panel::-webkit-scrollbar-thumb {
+        background-color: #4a5568; /* A dark gray for the thumb */
+        border-radius: 4px;
+      }
+      .control-panel::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
     </style>
   </head>
   <body class="overflow-hidden relative h-screen w-screen">
@@ -72,10 +83,10 @@
 
     <!-- Control Buttons -->
     <div
-      class="fixed bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2 flex flex-col sm:flex-row items-center gap-4 z-50"
+      class="control-panel fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row flex-wrap justify-center items-center gap-2 z-50 p-2 rounded-xl max-w-[95vw] max-h-[90vh] overflow-y-auto"
     >
       <!-- Language Flags -->
-      <div id="lang-container" class="flex gap-2 p-2 rounded-lg">
+      <div id="lang-container" class="flex gap-2 p-1 rounded-lg">
         <button
           data-lang="en"
           class="flag-btn rounded-full w-10 h-10"
@@ -114,33 +125,33 @@
       </div>
       <button
         id="randomize-text-btn"
-        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
       ></button>
       <button
         id="randomize-phrases-btn"
-        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
       ></button>
       <button
         id="randomize-positions-btn"
-        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
       ></button>
       <div class="flex flex-col gap-2">
         <button
           id="increase-font-btn"
-          class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+          class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
         ></button>
         <button
           id="decrease-font-btn"
-          class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+          class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
         ></button>
       </div>
       <button
         id="fullscreen-btn"
-        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        class="control-btn px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
       ></button>
       <button
         id="theme-toggle-btn"
-        class="control-btn p-3 rounded-lg shadow-lg transition-colors duration-300 text-sm h-full flex items-center justify-center w-12 h-12"
+        class="control-btn p-2 rounded-lg shadow-lg transition-colors duration-300 text-sm h-full flex items-center justify-center w-12 h-12"
       ></button>
     </div>
 
@@ -298,6 +309,7 @@
       // --- CORE FUNCTIONS ---
       function setTheme(theme) {
         currentTheme = theme;
+        const controlPanel = document.querySelector(".control-panel");
         if (theme === "dark") {
           body.classList.remove("bg-white", "text-black");
           body.classList.add("bg-black", "text-white", "font-thin-custom");
@@ -313,6 +325,8 @@
           });
           langContainer.classList.remove("bg-gray-200");
           langContainer.classList.add("bg-gray-800");
+          controlPanel.classList.add("bg-black/50");
+          controlPanel.classList.remove("bg-white/50");
           themeToggleBtn.innerHTML = sunIcon;
         } else {
           // Light theme
@@ -330,6 +344,8 @@
           });
           langContainer.classList.remove("bg-gray-800");
           langContainer.classList.add("bg-gray-200");
+          controlPanel.classList.remove("bg-black/50");
+          controlPanel.classList.add("bg-white/50");
           themeToggleBtn.innerHTML = moonIcon;
         }
       }

@@ -1,6 +1,6 @@
 # Eye Test & Ergonomics Tool
 
-[![GitHub Pages](https://img.shields.io/github/deployments/luizrobertomeier/eye-test-tool/production?label=Live%20Demo&logo=github)](https://luizrobertomeier.github.io/eye-test-tool/)
+[![GitHub Pages](https://img.shields.io/github/deployments/luizrobertomeier/eye-test-tool/github-pages?label=Live%20Demo&logo=github)](https://luizrobertomeier.github.io/eye-test-tool/)
 
 A simple, zero-dependency, client-side web application designed to help users find the optimal screen and text settings for their eyes, improving comfort and workspace ergonomics.
 
