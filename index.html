@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Luiz Roberto Meier & Gemini" />
+    <meta name="date" content="2025-07-09" />
+    <title>Eye Test Tool</title>
+    <!-- Load Tailwind CSS JIT CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Flag Icons CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7/css/flag-icons.min.css"
+    />
+    <style>
+      /* Custom styles for thin font and dynamic font size */
+      body {
+        font-family: "Arial", "Helvetica Neue", sans-serif; /* Use a common, clean font */
+        --current-font-size: 11px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      .font-thin-custom {
+        font-weight: 200; /* A thin weight */
+        font-size: var(--current-font-size);
+        line-height: 1.2;
+        letter-spacing: 0.05em;
+      }
+      .vertical-text {
+        writing-mode: vertical-lr;
+        text-orientation: mixed;
+      }
+      .flag-btn {
+        border: 2px solid transparent;
+        transition: all 0.2s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .flag-btn.active {
+        border-color: #4ade80; /* A bright green to indicate active */
+        transform: scale(1.1);
+      }
+      /* Size the flag icon itself within the button */
+      .flag-btn .fi {
+        font-size: 1.75rem;
+        line-height: 1;
+      }
+    </style>
+  </head>
+  <body class="overflow-hidden relative h-screen w-screen">
+    <!-- Fixed Position Text Elements -->
+    <div
+      id="top-text"
+      class="fixed top-0 left-0 right-0 p-2 text-center w-full"
+    ></div>
+    <div
+      id="bottom-text"
+      class="fixed bottom-0 left-0 right-0 p-2 text-center w-full"
+    ></div>
+    <div
+      id="left-text"
+      class="fixed left-0 top-0 bottom-0 p-2 flex items-center justify-center h-full vertical-text"
+    ></div>
+    <div
+      id="right-text"
+      class="fixed right-0 top-0 bottom-0 p-2 flex items-center justify-center h-full vertical-text"
+    ></div>
+
+    <!-- Container for Randomly Positioned Text -->
+    <div id="random-container"></div>
+
+    <!-- Control Buttons -->
+    <div
+      class="fixed bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2 flex flex-col sm:flex-row items-center gap-4 z-50"
+    >
+      <!-- Language Flags -->
+      <div id="lang-container" class="flex gap-2 p-2 rounded-lg">
+        <button
+          data-lang="en"
+          class="flag-btn rounded-full w-10 h-10"
+          title="English"
+        >
+          <span class="fi fi-us fis"></span>
+        </button>
+        <button
+          data-lang="pt"
+          class="flag-btn rounded-full w-10 h-10"
+          title="Português"
+        >
+          <span class="fi fi-br fis"></span>
+        </button>
+        <button
+          data-lang="es"
+          class="flag-btn rounded-full w-10 h-10"
+          title="Español"
+        >
+          <span class="fi fi-es fis"></span>
+        </button>
+        <button
+          data-lang="de"
+          class="flag-btn rounded-full w-10 h-10"
+          title="Deutsch"
+        >
+          <span class="fi fi-de fis"></span>
+        </button>
+        <button
+          data-lang="zh"
+          class="flag-btn rounded-full w-10 h-10"
+          title="中文"
+        >
+          <span class="fi fi-cn fis"></span>
+        </button>
+      </div>
+      <button
+        id="randomize-text-btn"
+        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+      ></button>
+      <button
+        id="randomize-phrases-btn"
+        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+      ></button>
+      <button
+        id="randomize-positions-btn"
+        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+      ></button>
+      <div class="flex flex-col gap-2">
+        <button
+          id="increase-font-btn"
+          class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        ></button>
+        <button
+          id="decrease-font-btn"
+          class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+        ></button>
+      </div>
+      <button
+        id="fullscreen-btn"
+        class="control-btn px-6 py-3 rounded-lg shadow-lg transition-colors duration-300 text-sm w-44"
+      ></button>
+      <button
+        id="theme-toggle-btn"
+        class="control-btn p-3 rounded-lg shadow-lg transition-colors duration-300 text-sm h-full flex items-center justify-center w-12 h-12"
+      ></button>
+    </div>
+
+    <!-- Author Credits -->
+    <div
+      id="author-credits"
+      class="fixed bottom-2 right-4"
+      style="font-size: 8px; z-index: 5"
+    >
+      Authors: Luiz Roberto Meier &amp; Gemini
+    </div>
+
+    <script>
+      // --- DOM ELEMENT REFERENCES ---
+      const body = document.body;
+      const topText = document.getElementById("top-text");
+      const bottomText = document.getElementById("bottom-text");
+      const leftText = document.getElementById("left-text");
+      const rightText = document.getElementById("right-text");
+      const randomContainer = document.getElementById("random-container");
+      const authorCredits = document.getElementById("author-credits");
+      const langContainer = document.getElementById("lang-container");
+
+      const randomizeTextBtn = document.getElementById("randomize-text-btn");
+      const randomizePhrasesBtn = document.getElementById(
+        "randomize-phrases-btn"
+      );
+      const randomizePositionsBtn = document.getElementById(
+        "randomize-positions-btn"
+      );
+      const fullscreenBtn = document.getElementById("fullscreen-btn");
+      const increaseFontBtn = document.getElementById("increase-font-btn");
+      const decreaseFontBtn = document.getElementById("decrease-font-btn");
+      const themeToggleBtn = document.getElementById("theme-toggle-btn");
+      const allControlBtns = document.querySelectorAll(".control-btn");
+
+      // --- STATE & CONSTANTS ---
+      const NUM_RANDOM_PHRASES = 5;
+      const fixedElements = [topText, bottomText, leftText, rightText];
+      let randomElements = [];
+
+      const MIN_FONT_SIZE = 5;
+      const MAX_FONT_SIZE = 20;
+      let currentFontSize = 11;
+      let currentTheme = "dark";
+
+      let currentLanguageIndex = 0;
+      const languages = ["en", "pt", "es", "de", "zh"];
+
+      const sunIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+      const moonIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
+
+      // --- DATA SOURCES ---
+      const phrases = {
+        en: [
+          "Adjusting monitor height improves posture.",
+          "Proper lighting reduces digital eye strain.",
+          "Take regular breaks to rest your eyes.",
+          "The distance from your screen is important.",
+          "Blink often to keep your eyes lubricated.",
+          "Ergonomics can prevent repetitive strain injury.",
+          "Consider an anti-glare screen filter.",
+          "A comfortable chair makes a world of difference.",
+          "Look away from the screen every twenty minutes.",
+        ],
+        pt: [
+          "Ajustar a altura do monitor melhora a postura.",
+          "Iluminação adequada reduz a fadiga ocular digital.",
+          "Faça pausas regulares para descansar os olhos.",
+          "A distância da tela é importante.",
+          "Pisque com frequência para manter os olhos lubrificados.",
+          "A ergonomia pode prevenir lesões por esforço repetitivo.",
+          "Considere um filtro de tela antirreflexo.",
+          "Uma cadeira confortável faz toda a diferença.",
+          "Desvie o olhar da tela a cada vinte minutos.",
+        ],
+        es: [
+          "Ajustar la altura del monitor mejora la postura.",
+          "La iluminación adecuada reduce la fatiga visual digital.",
+          "Toma descansos regulares para relajar la vista.",
+          "La distancia a la pantalla es importante.",
+          "Parpadea con frecuencia para mantener los ojos lubricados.",
+          "La ergonomía puede prevenir lesiones por esfuerzo repetitivo.",
+          "Considera un filtro de pantalla antirreflejos.",
+          "Una silla cómoda marca una gran diferencia.",
+          "Aparta la vista de la pantalla cada veinte minutos.",
+        ],
+        de: [
+          "Die Anpassung der Monitorhöhe verbessert die Haltung.",
+          "Die richtige Beleuchtung reduziert die digitale Augenbelastung.",
+          "Machen Sie regelmäßig Pausen, um Ihre Augen auszuruhen.",
+          "Der Abstand zum Bildschirm ist wichtig.",
+          "Blinzeln Sie oft, um Ihre Augen feucht zu halten.",
+          "Ergonomie kann Verletzungen durch wiederholte Belastung vorbeugen.",
+          "Erwägen Sie einen Blendschutzfilter für den Bildschirm.",
+          "Ein bequemer Stuhl macht einen großen Unterschied.",
+          "Schauen Sie alle zwanzig Minuten vom Bildschirm weg.",
+        ],
+        zh: [
+          "调整显示器高度可改善姿势。",
+          "适当的照明可减少数字眼疲劳。",
+          "定时休息，让眼睛得到放松。",
+          "与屏幕的距离很重要。",
+          "经常眨眼以保持眼睛湿润。",
+          "人体工程学可以预防重复性劳损。",
+          "考虑使用防眩光屏幕滤镜。",
+          "一把舒适的椅子会带来天壤之别。",
+          "每二十分钟将视线从屏幕上移开。",
+        ],
+      };
+
+      const uiText = {
+        en: {
+          gibberish: "Randomize Gibberish",
+          phrases: "Randomize Phrases",
+          positions: "Randomize Positions",
+          increase: "Increase Font",
+          decrease: "Decrease Font",
+          fullscreen: "Toggle Fullscreen",
+        },
+        pt: {
+          gibberish: "Aleatorizar Caracteres",
+          phrases: "Aleatorizar Frases",
+          positions: "Aleatorizar Posições",
+          increase: "Aumentar Fonte",
+          decrease: "Diminuir Fonte",
+          fullscreen: "Tela Cheia",
+        },
+        es: {
+          gibberish: "Aleatorizar Caracteres",
+          phrases: "Aleatorizar Frases",
+          positions: "Aleatorizar Posiciones",
+          increase: "Aumentar Fuente",
+          decrease: "Disminuir Fuente",
+          fullscreen: "Pantalla Completa",
+        },
+        de: {
+          gibberish: "Kauderwelsch",
+          phrases: "Sätze Mischen",
+          positions: "Positionen Mischen",
+          increase: "Schrift Vergrößern",
+          decrease: "Schrift Verkleinern",
+          fullscreen: "Vollbild",
+        },
+        zh: {
+          gibberish: "随机乱码",
+          phrases: "随机短语",
+          positions: "随机位置",
+          increase: "增大字体",
+          decrease: "减小字体",
+          fullscreen: "切换全屏",
+        },
+      };
+
+      // --- CORE FUNCTIONS ---
+      function setTheme(theme) {
+        currentTheme = theme;
+        if (theme === "dark") {
+          body.classList.remove("bg-white", "text-black");
+          body.classList.add("bg-black", "text-white", "font-thin-custom");
+          authorCredits.classList.remove("text-gray-600");
+          authorCredits.classList.add("text-gray-500");
+          allControlBtns.forEach((btn) => {
+            btn.classList.remove(
+              "bg-gray-200",
+              "hover:bg-gray-300",
+              "text-black"
+            );
+            btn.classList.add("bg-gray-800", "hover:bg-gray-700", "text-white");
+          });
+          langContainer.classList.remove("bg-gray-200");
+          langContainer.classList.add("bg-gray-800");
+          themeToggleBtn.innerHTML = sunIcon;
+        } else {
+          // Light theme
+          body.classList.remove("bg-black", "text-white");
+          body.classList.add("bg-white", "text-black", "font-thin-custom");
+          authorCredits.classList.remove("text-gray-500");
+          authorCredits.classList.add("text-gray-600");
+          allControlBtns.forEach((btn) => {
+            btn.classList.remove(
+              "bg-gray-800",
+              "hover:bg-gray-700",
+              "text-white"
+            );
+            btn.classList.add("bg-gray-200", "hover:bg-gray-300", "text-black");
+          });
+          langContainer.classList.remove("bg-gray-800");
+          langContainer.classList.add("bg-gray-200");
+          themeToggleBtn.innerHTML = moonIcon;
+        }
+      }
+
+      function updateActiveFlag() {
+        document.querySelectorAll(".flag-btn").forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.dataset.lang === languages[currentLanguageIndex]) {
+            btn.classList.add("active");
+          }
+        });
+      }
+
+      function detectInitialLanguage() {
+        const browserLang = navigator.language.split("-")[0];
+        const detectedIndex = languages.indexOf(browserLang);
+        if (detectedIndex !== -1) {
+          currentLanguageIndex = detectedIndex;
+        }
+      }
+
+      function updateUIText() {
+        const langCode = languages[currentLanguageIndex];
+        const texts = uiText[langCode];
+        randomizeTextBtn.textContent = texts.gibberish;
+        randomizePhrasesBtn.textContent = texts.phrases;
+        randomizePositionsBtn.textContent = texts.positions;
+        fullscreenBtn.textContent = texts.fullscreen;
+        updateFontSizeButtons();
+        updateActiveFlag();
+      }
+
+      function updateFontSizeButtons() {
+        const langCode = languages[currentLanguageIndex];
+        const texts = uiText[langCode];
+        increaseFontBtn.textContent = `${texts.increase} (${currentFontSize}px)`;
+        decreaseFontBtn.textContent = `${texts.decrease} (${currentFontSize}px)`;
+      }
+
+      function applyFontSize() {
+        body.style.setProperty("--current-font-size", `${currentFontSize}px`);
+        updateFontSizeButtons();
+        setTimeout(randomizeAllPositions, 50);
+      }
+
+      function setLanguage(langCode) {
+        const langIndex = languages.indexOf(langCode);
+        if (langIndex !== -1) {
+          currentLanguageIndex = langIndex;
+          updateUIText();
+          updateAllText(getRandomPhrase);
+        }
+      }
+
+      function generateGibberish(minLength = 20, maxLength = 80) {
+        const chars = "abcdefghijklmnopqrstuvwxyz      ";
+        const symbols = "1234567890!@#$%^&*()_+-=[]{}|;:,.<>?";
+        const fullSet = chars.repeat(5) + symbols;
+        const length =
+          Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+        let result = "";
+        for (let i = 0; i < length; i++) {
+          result += fullSet.charAt(Math.floor(Math.random() * fullSet.length));
+        }
+        return result.trim().replace(/\s+/g, " ");
+      }
+
+      function getRandomPhrase() {
+        const langCode = languages[currentLanguageIndex];
+        const phraseList = phrases[langCode];
+        const index = Math.floor(Math.random() * phraseList.length);
+        return phraseList[index];
+      }
+
+      function createRandomElements() {
+        randomContainer.innerHTML = "";
+        randomElements = [];
+        for (let i = 0; i < NUM_RANDOM_PHRASES; i++) {
+          const el = document.createElement("div");
+          el.classList.add("fixed", "p-2", "z-10");
+          randomContainer.appendChild(el);
+          randomElements.push(el);
+        }
+      }
+
+      function updateAllText(textGenerator) {
+        fixedElements.forEach((el) => {
+          const isVertical = el.id.includes("left") || el.id.includes("right");
+          let content = "";
+          const repeatCount = isVertical ? 5 : 3;
+          for (let i = 0; i < repeatCount; i++) {
+            content += textGenerator() + " ";
+          }
+          el.textContent = content.trim();
+        });
+        randomElements.forEach((el) => {
+          el.textContent = textGenerator();
+        });
+      }
+
+      function randomizeAllPositions() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        randomElements.forEach((el) => {
+          if (!el) return;
+          const elWidth = el.offsetWidth;
+          const elHeight = el.offsetHeight;
+          const maxX = viewportWidth - elWidth - 20;
+          const maxY = viewportHeight - elHeight - 20;
+          const newX = Math.max(20, Math.floor(Math.random() * maxX));
+          const newY = Math.max(20, Math.floor(Math.random() * maxY));
+          el.style.left = `${newX}px`;
+          el.style.top = `${newY}px`;
+        });
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch((err) => {
+            const modal = document.createElement("div");
+            modal.className =
+              "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50";
+            modal.innerHTML = `<div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg text-center"><p>Fullscreen mode failed: ${err.message}</p><button onclick="this.parentElement.parentElement.remove()" class="mt-4 bg-gray-700 px-4 py-2 rounded">Close</button></div>`;
+            document.body.appendChild(modal);
+          });
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+
+      function initialize() {
+        detectInitialLanguage();
+        createRandomElements();
+        setTheme("dark");
+        updateUIText();
+        applyFontSize();
+        updateAllText(getRandomPhrase);
+      }
+
+      // --- EVENT LISTENERS ---
+      themeToggleBtn.addEventListener("click", () => {
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        setTheme(newTheme);
+      });
+
+      langContainer.addEventListener("click", (e) => {
+        const targetButton = e.target.closest(".flag-btn");
+        if (targetButton) {
+          const langCode = targetButton.dataset.lang;
+          setLanguage(langCode);
+        }
+      });
+
+      randomizeTextBtn.addEventListener("click", () =>
+        updateAllText(generateGibberish)
+      );
+      randomizePhrasesBtn.addEventListener("click", () =>
+        updateAllText(getRandomPhrase)
+      );
+      randomizePositionsBtn.addEventListener("click", randomizeAllPositions);
+      fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+      increaseFontBtn.addEventListener("click", () => {
+        if (currentFontSize < MAX_FONT_SIZE) {
+          currentFontSize++;
+          applyFontSize();
+        }
+      });
+
+      decreaseFontBtn.addEventListener("click", () => {
+        if (currentFontSize > MIN_FONT_SIZE) {
+          currentFontSize--;
+          applyFontSize();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        let timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(randomizeAllPositions, 150);
+      });
+
+      // --- INITIALIZATION ---
+      document.addEventListener("DOMContentLoaded", initialize);
+    </script>
+  </body>
+</html>
